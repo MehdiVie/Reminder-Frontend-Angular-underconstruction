@@ -1,0 +1,9 @@
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.full-width-table {
+  width: 100%;
+}

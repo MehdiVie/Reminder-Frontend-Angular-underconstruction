@@ -1,0 +1,47 @@
+<h3 mat-dialog-title>Edit Event</h3>
+<mat-error *ngIf="backendErrors?._global" 
+            style="display:block; margin-bottom: 1em;">
+    {{ backendErrors._global }}
+</mat-error>
+<form [formGroup]="form" (ngSubmit)="save()">
+
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Title</mat-label>
+        <input matInput formControlName="title" />
+        <mat-error *ngIf="form.get('title')?.hasError('required')">
+            Title is required
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" ></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Event-Date</mat-label>
+        <input matInput type="date" formControlName="eventDate" 
+        [min]="minEventDate" />
+        <mat-error *ngIf="form.get('eventDate')?.hasError('backend')">
+            {{ backendErrors?.eventDate }}
+        </mat-error>
+        <mat-error *ngIf="form.get('eventDate')?.hasError('required')">
+            Event-Date is required.
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Reminder-Time</mat-label>
+        <input matInput type="datetime-local" formControlName="reminderTime" [min]="minReminderTime" />
+        <mat-error *ngIf="form.get('reminderTime')?.hasError('backend')">
+            {{ backendErrors?.reminderTime }}
+        </mat-error>
+    </mat-form-field>
+
+
+    <div class="actions">
+        <button mat-button type="button" (click)="cancel()">Cancel</button>
+        <button mat-raised-button type="submit" color="primary">Save</button>
+    </div>
+
+</form>
