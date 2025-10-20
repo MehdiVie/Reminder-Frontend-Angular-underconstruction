@@ -88,7 +88,7 @@ export class EventDialog {
         if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.
                                       test(payload.reminderTime)) {
           this.backendErrors = { ...this.backendErrors, reminderTime: 'Invalid datetime format' };
-          //return;
+        
         }
         
         const eventDate = new Date(payload.eventDate);
@@ -98,7 +98,7 @@ export class EventDialog {
 
         if (reminderDate >= eventDate) {
           this.backendErrors = {...this.backendErrors , reminderTime : 'ReminderTime must be before EventDate.'};
-        //return;
+        
         }
         
       }
