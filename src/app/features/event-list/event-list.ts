@@ -60,5 +60,16 @@ export class EventListComponent implements OnInit {
     });
 
   }
+  addEvent() {
+    const dialogRef= this.dialog.open(EventDialog , {
+      width : '500px' ,
+      data : {} // no data , we want to make a new data
+    });
+    dialogRef.afterClosed().subscribe(changed => {
+      if (changed) {
+        this.loadEvents(); // only in success get the list
+      }
+    })
+  }
 
 }

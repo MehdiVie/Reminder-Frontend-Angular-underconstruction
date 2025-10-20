@@ -1,5 +1,12 @@
 <div class="container" *ngIf="!isLoading; else loading">
-  <h2>Event List</h2>
+  
+  <div class="header">
+    <h2>Event List</h2>
+    <button mat-raised-button class="primary" (click)="addEvent()">
+      <mat-icon>add</mat-icon> Add Event
+    </button>
+  </div>
+  
 
   <table mat-table [dataSource]="events" class="mat-elevation-z8 full-width-table">
 

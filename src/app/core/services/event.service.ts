@@ -18,9 +18,15 @@ getAll(): Observable<Event[]> {
   );
 }
 
-update(id : number , event : Event): Observable<Event> {
-    return this.http.put<Event>(`${this.apiUrl}/${id}`, event)
+create(event : Event) : Observable<Event> {
+    return this.http.post<Event>(`${this.apiUrl}`,event);
 }
+
+
+update(id : number , event : Event): Observable<Event> {
+    return this.http.put<Event>(`${this.apiUrl}/${id}`, event);
+}
+
 
 
 delete(id: number): Observable<void> {

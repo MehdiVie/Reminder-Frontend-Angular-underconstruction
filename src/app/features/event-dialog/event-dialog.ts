@@ -68,8 +68,6 @@ export class EventDialog {
     return new Date().toISOString().substring(0,16); // yyyy-mm-ddTHH:mm (without second)
   }
 
-
-
   save() {
     if (this.form.invalid) return;
 
@@ -90,15 +88,31 @@ export class EventDialog {
         if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.
                                       test(payload.reminderTime)) {
           this.backendErrors = { ...this.backendErrors, reminderTime: 'Invalid datetime format' };
-          return;
+          //return;
         }
+        
+        const eventDate = new Date(payload.eventDate);
+        const reminderDate = new Date(payload.reminderTime.substring(0,10));
+        //console.log(eventDate);
+        //console.log(reminderDate);
+
+        if (reminderDate >= eventDate) {
+          this.backendErrors = {...this.backendErrors , reminderTime : 'ReminderTime must be before EventDate.'};
+        //return;
+        }
+        
       }
 
-      
+
+
       this.isSaving=true;
       this.backendErrors = {};
 
-      this.eventService.update(this.data.id , payload).subscribe({
+      const $request = this.data.id ? 
+                       this.eventService.update(this.data.id,payload) :
+                       this.eventService.create(payload);
+
+      $request.subscribe({
         next: () => {
           this.isSaving=false;
           this.dialogRef.close(true); // success, close dialog! and tell it to list
@@ -126,7 +140,7 @@ export class EventDialog {
 
           } else {
             this.backendErrors = {_global: err?.error?.message 
-                                            || 'update failed'};
+                                            || 'save failed'};
           }
           
           this.cdr.detectChanges();
