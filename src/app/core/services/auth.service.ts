@@ -20,6 +20,7 @@ export class AuthService {
         return this.http.post<LoginResponse>(`${this.apiUrl}/login`, data )
         .pipe(
             tap((res)=>{
+            console.log('[AuthService] Saving token:', res.data.token);
             localStorage.setItem(this.token_key , res.data.token);
             this.currentUserEmail.next(res.data.email);
         }));

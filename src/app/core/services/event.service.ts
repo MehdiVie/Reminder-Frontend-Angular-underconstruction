@@ -18,6 +18,12 @@ getAll(): Observable<Event[]> {
   );
 }
 
+getById(id: number) : Observable<Event> {
+  return this.http.get<{ data : Event}>(`${this.apiUrl}/${id}`).pipe(
+                      map(response => response.data)
+  );
+}
+
 create(event : Event) : Observable<Event> {
     return this.http.post<Event>(`${this.apiUrl}`,event);
 }

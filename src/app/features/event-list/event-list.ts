@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { EventDialog } from '../event-dialog/event-dialog';
 import { EventService } from '../../core/services/event.service';
 import { Event } from '../../core/models/event.model';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -21,10 +22,20 @@ export class EventListComponent implements OnInit {
   events: Event[] = [];
   isLoading = true;
 
-  constructor(private eventService: EventService , private dialog: MatDialog) {}
+  constructor(private eventService: EventService , private dialog: MatDialog,
+              private route : ActivatedRoute) {}
 
   ngOnInit() {
-    this.loadEvents();
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam) {
+      const id = Number(idParam);
+      console.log("Detected id from the route : ", id);
+      this.getEvent(id);
+    }
+    else {
+      this.loadEvents();
+    }
+    
   }
 
   loadEvents() {
@@ -40,6 +51,18 @@ export class EventListComponent implements OnInit {
       },
     });
   }
+
+  getEvent(id : number) {
+    this.eventService.getById(id).subscribe({
+      next: (data) => {
+        console.log('Event data:', data);
+        this.events = [data];
+        this.isLoading = false;
+      },
+      error: (err) => console.error('Error fetching single event:', err)
+    });
+  }
+
 
   deleteEvent(id: number) {
     if (confirm('Are you sure you want to delete this event?')) {
