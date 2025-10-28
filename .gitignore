@@ -1,5 +1,18 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# =====================================================
+# Angular + VSCode project (by Mehdi)
+# =====================================================
+
+# Sensitive files
 scripts.docx
+~$*.docx
+.env
+.env.local
+.env.production
+
+# Angular environment files
+src/environments/environment.ts
+src/environments/environment.development.ts
+src/environments/environment.prod.ts
 
 # Compiled output
 /dist
@@ -7,10 +20,11 @@ scripts.docx
 /out-tsc
 /bazel-out
 
-# Node
+# Node modules
 /node_modules
 npm-debug.log
 yarn-error.log
+pnpm-debug.log
 
 # IDEs and editors
 .idea/
@@ -29,7 +43,7 @@ yarn-error.log
 !.vscode/extensions.json
 .history/*
 
-# Miscellaneous
+# Angular cache & test outputs
 /.angular/cache
 .sass-cache/
 /connect.lock

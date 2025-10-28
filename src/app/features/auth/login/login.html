@@ -1,0 +1,58 @@
+<div class="login-wrapper">
+    <div class="logn-card">
+        <h3 class="title">Sign In</h3>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
+            <!-- Email -->
+            <div class="form-control">
+                <label for="email">Email</label>
+                <input type="email" 
+                    id="email"
+                    formControlName="email"
+                    placeholder="Enter your email."
+                />
+                <p class="error" *ngIf="form.get('email')?.invalid && 
+                    form.get('email')?.touched">
+
+                    {{form.get('email')?.errors?.['required'] ? 
+                    'Email is required.' : ''}}
+
+                    {{form.get('email')?.errors?.['email'] ? 
+                    'Invalid email format.' : ''}}
+
+                </p>
+            </div>
+
+
+            <!-- Password -->
+            <div class="form-control">
+                <label for="password">Password</label>
+                <input type="password" 
+                    id="password"
+                    formControlName="password"
+                    placeholder="Enter your password."
+                />
+                <p class="error" *ngIf="form.get('password')?.invalid && 
+                    form.get('password')?.touched">
+
+                    {{form.get('password')?.errors?.['required'] ? 
+                    'Password is required.' : ''}}
+
+                </p>
+            </div>
+
+            <!-- Submit Button -->
+            <div style="margin-top: 20px;">
+                <button type="submit"
+                    id="submit"
+                    class="btn"
+                    [disabled]="form.invalid || isSubmitting()"
+                >
+                    {{ (isSubmitting()) ? 'Signing in..' : 'Login'}}
+                </button>
+            </div>
+
+            <!-- Error Message -->
+            <p class="error-message" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+        </form>
+    </div>
+</div>

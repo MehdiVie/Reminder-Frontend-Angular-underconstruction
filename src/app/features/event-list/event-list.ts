@@ -30,6 +30,7 @@ export class EventListComponent implements OnInit {
   loadEvents() {
     this.eventService.getAll().subscribe({
       next: (data) => {
+        console.log('Events received from backend:', data);
         this.events = data;
         this.isLoading = false;
       },

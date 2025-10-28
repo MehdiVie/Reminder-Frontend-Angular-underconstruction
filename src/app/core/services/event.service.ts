@@ -8,9 +8,9 @@ import { Event } from '../models/event.model';
   providedIn: 'root'
 })
 export class EventService {
-  private apiUrl = 'http://localhost:9090/api/events';
+private apiUrl = 'http://localhost:9090/api/events';
 
-  constructor(private http: HttpClient) {}
+constructor(private http: HttpClient) {}
 
 getAll(): Observable<Event[]> {
   return this.http.get<{ data: Event[] }>(this.apiUrl).pipe(
