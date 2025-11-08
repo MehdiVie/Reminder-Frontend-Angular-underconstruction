@@ -8,19 +8,23 @@ import { EventDialog } from '../event-dialog/event-dialog';
 import { EventService } from '../../core/services/event.service';
 import { Event } from '../../core/models/event.model';
 import { ActivatedRoute } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RouterModule } from '@angular/router';
+
+
 
 
 @Component({
   selector: 'app-event-list',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule , MatProgressSpinnerModule, RouterModule],
   templateUrl: './event-list.html',
   styleUrls: ['./event-list.css']
 })
 export class EventListComponent implements OnInit {
   displayedColumns: string[] = ['id', 'title', 'description' , 'eventDate', 'reminderTime' , 'actions'];
   events: Event[] = [];
-  isLoading = true;
+  
 
   constructor(private eventService: EventService , private dialog: MatDialog,
               private route : ActivatedRoute) {}
@@ -43,11 +47,10 @@ export class EventListComponent implements OnInit {
       next: (data) => {
         console.log('Events received from backend:', data);
         this.events = data;
-        this.isLoading = false;
       },
       error: (err) => {
         console.error('Error fetching events:', err);
-        this.isLoading = false;
+       
       },
     });
   }
@@ -57,7 +60,6 @@ export class EventListComponent implements OnInit {
       next: (data) => {
         console.log('Event data:', data);
         this.events = [data];
-        this.isLoading = false;
       },
       error: (err) => console.error('Error fetching single event:', err)
     });
@@ -74,7 +76,7 @@ export class EventListComponent implements OnInit {
   }
   editEvent(event: Event) {
     const dialogRef = this.dialog.open(EventDialog, {
-      width : '500px' ,
+      width : '600px' ,
       data : { ...event }
     });
     dialogRef.afterClosed().subscribe((changed) => {
@@ -84,6 +86,14 @@ export class EventListComponent implements OnInit {
     });
 
   }
+
+  showEvent(event: Event) {
+    const dialogRef = this.dialog.open(EventDialog, {
+      width : '600px' ,
+      data : { ...event , readonly: true}
+    });
+  }
+  
   addEvent() {
     const dialogRef= this.dialog.open(EventDialog , {
       width : '500px' ,

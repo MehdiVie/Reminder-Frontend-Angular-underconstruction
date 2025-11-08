@@ -7,17 +7,20 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { ChangeDetectorRef } from '@angular/core';
 import { EventService } from '../../core/services/event.service';
+import { MatIconModule } from '@angular/material/icon';
+
 
 @Component({
   selector: 'app-event-dialog',
   imports: [
-    CommonModule ,
-    ReactiveFormsModule , 
-    MatFormFieldModule ,
-    MatInputModule ,
-    MatButtonModule ,
-    MatDialogModule
-  ],
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatIconModule
+],
   templateUrl: './event-dialog.html',
   styleUrls: ['./event-dialog.css']
 })
@@ -39,28 +42,29 @@ export class EventDialog {
         eventDate : [this.normalizeDate(data.eventDate) , Validators.required] ,
         reminderTime : [this.normalizeDateTimeLocal(data.reminderTime)] 
      })
+     if (data.readonly) {
+     this.form.disable(); 
+    }
   }
 
   // yyy-mm-dd
   private normalizeDate(val: string | null): string {
     if (!val) return '';
-    return typeof val == 'string' ? val.substring(0,10) : '';
+    const date = new Date(val);
+    return date.toISOString().split('T')[0];
   }
 
   // yyyy-mm-ddTHH:mm
   private normalizeDateTimeLocal(val: string | null) : string {
     if (!val) return '';
-
-    // (2025-10-19T20:30:00.000+02:00 -> 2025-10-19T20:30)
-    const cleaned = val.replace(/\.\d+.*$/, '').replace(/\+\d{2}:\d{2}$/, '');
-
-    // only return date-time with hours and seconds (yyyy-mm-dd HH:mm)
-    return cleaned.substring(0, 16);
+    const date = new Date(val);
+    return date.toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
   }
 
   // minEventDate & minReminderTime
   get minEventDate() : string {
-    const d = new Date(Date.now() + 24*60*60*1000); // tomorrow date
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
     return d.toISOString().split('T')[0];
   }
 
@@ -69,44 +73,63 @@ export class EventDialog {
   }
 
   save() {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.isSaving = true;
+    this.backendErrors = {};
 
     // make data for backend
     const payload = { ...this.form.value };
 
-    // eventDate -> yyyy-mm-dd
-    payload.eventDate = (payload.eventDate as string).substring(0,10);
+    // Normalize formats
+    if (payload.eventDate) {
+      payload.eventDate = payload.eventDate.substring(0, 10);
+      if (payload.eventDate < this.minEventDate) {
+        const temp = this.form.get("eventDate");
 
-    // Format reminderTime as full ISO
-      if (payload.reminderTime) {
-
-        if ((payload.reminderTime as string).length==16) {
-          // Cut milliseconds to match LocalDateTime format ('yyyy-mm-dd HH:mm:ss')
-          payload.reminderTime = payload.reminderTime + ":00";
+        if (temp) {
+          temp.setErrors({ backend : true });
+          temp.markAsTouched();
         }
 
-        if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.
-                                      test(payload.reminderTime)) {
-          this.backendErrors = { ...this.backendErrors, reminderTime: 'Invalid datetime format' };
-        
-        }
-        
-        const eventDate = new Date(payload.eventDate);
-        const reminderDate = new Date(payload.reminderTime.substring(0,10));
-        //console.log(eventDate);
-        //console.log(reminderDate);
-
-        if (reminderDate >= eventDate) {
-          this.backendErrors = {...this.backendErrors , reminderTime : 'ReminderTime must be before EventDate.'};
-        
-        }
-        
+        this.backendErrors.eventDate = `Event date must be at least 
+        ${this.minEventDate}.`;
+        this.isSaving = false;
+        this.cdr.detectChanges();
+        return;
       }
+    }
 
+    if (payload.reminderTime) {
+      if (!payload.reminderTime.includes('T')) {
+        payload.reminderTime = payload.reminderTime.replace(' ', 'T');
+      }
+      if (payload.reminderTime.length === 16) {
+        payload.reminderTime += ':00';
+      }
+    }
 
+    // Validation: reminder before event
+    if (payload.reminderTime && payload.eventDate) {
+      const eventDate = new Date(payload.eventDate);
+      const reminder = new Date(payload.reminderTime);
+      if (reminder >= eventDate) {
+        const temp = this.form.get("reminderTime");
 
-      this.isSaving=true;
-      this.backendErrors = {};
+        if (temp) {
+          temp.setErrors({ backend : true });
+          temp.markAsTouched();
+        }
+
+        this.backendErrors.reminderTime = 'Reminder must be before the event date.';
+        this.isSaving = false;
+        this.cdr.detectChanges();
+        return;
+      }
+    }
 
       const $request = this.data.id ? 
                        this.eventService.update(this.data.id,payload) :
@@ -120,27 +143,14 @@ export class EventDialog {
         error : (err) => {
           this.isSaving=false;
           // show errors from backend-validation in from
-          if(err?.error?.data) {
-            this.backendErrors = err.error.data as Record <string,string>;
-
-            // eventDate
-            if (this.backendErrors.eventDate) {
-              const c = this.form.get('eventDate');
-              c?.setErrors({ backend: true});
-              c?.markAsTouched();
-            }
-
-            // reminderTime
-            if (this.backendErrors.reminderTime) {
-              const c = this.form.get('reminderTime');
-              c?.setErrors({ backend: true });
-              c?.markAsTouched();
-            }
-
-
+          if (err?.error?.data) {
+            this.backendErrors = err.error.data;
+            Object.keys(this.backendErrors).forEach((key) => {
+              const control = this.form.get(key);
+              if (control) control.setErrors({ backend: true });
+            });
           } else {
-            this.backendErrors = {_global: err?.error?.message 
-                                            || 'save failed'};
+          this.backendErrors._global = err?.error?.message || 'Save failed.';
           }
           
           this.cdr.detectChanges();

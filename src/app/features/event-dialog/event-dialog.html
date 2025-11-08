@@ -1,47 +1,107 @@
-<h3 mat-dialog-title>Edit Event</h3>
-<mat-error *ngIf="backendErrors?._global" 
-            style="display:block; margin-bottom: 1em;">
-    {{ backendErrors._global }}
-</mat-error>
-<form [formGroup]="form" (ngSubmit)="save()">
+<h2 mat-dialog-title class="text-2xl font-bold text-gray-800 mb-4 text-center flex items-center justify-center gap-2">
+  <mat-icon color="primary">{{ data?.id ? 'edit' : 'add_circle' }}</mat-icon>
+  {{ data?.id ? 'Edit Event' : 'Add New Event' }}
+</h2>
 
-    <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Title</mat-label>
-        <input matInput formControlName="title" />
-        <mat-error *ngIf="form.get('title')?.hasError('required')">
-            Title is required
-        </mat-error>
-    </mat-form-field>
+<mat-dialog-content class="px-6 py-4 bg-gray-50 rounded-2xl shadow-inner">
 
-    <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Description</mat-label>
-        <textarea matInput formControlName="description" ></textarea>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Event-Date</mat-label>
-        <input matInput type="date" formControlName="eventDate" 
-        [min]="minEventDate" />
-        <mat-error *ngIf="form.get('eventDate')?.hasError('backend')">
-            {{ backendErrors?.eventDate }}
-        </mat-error>
-        <mat-error *ngIf="form.get('eventDate')?.hasError('required')">
-            Event-Date is required.
-        </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Reminder-Time</mat-label>
-        <input matInput type="datetime-local" formControlName="reminderTime" [min]="minReminderTime" />
-        <mat-error *ngIf="form.get('reminderTime')?.hasError('backend')">
-            {{ backendErrors?.reminderTime }}
-        </mat-error>
-    </mat-form-field>
-
-
-    <div class="actions">
-        <button mat-button type="button" (click)="cancel()">Cancel</button>
-        <button mat-raised-button type="submit" color="primary">Save</button>
+  <!-- 🟢 VIEW MODE -->
+  <div *ngIf="data?.readonly; else editMode" class="space-y-5">
+    <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+      <h3 class="text-sm font-semibold text-gray-500 uppercase mb-1">Title</h3>
+      <p class="text-gray-900 text-lg font-medium">{{ data.title || '—' }}</p>
     </div>
 
-</form>
+    <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+      <h3 class="text-sm font-semibold text-gray-500 uppercase mb-1">Description</h3>
+      <p class="text-gray-800 text-base whitespace-pre-line">{{ data.description || '—' }}</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+        <h3 class="text-sm font-semibold text-gray-500 uppercase mb-1">Event Date</h3>
+        <p class="text-gray-900 text-base">{{ data.eventDate | date: 'yyyy-MM-dd' }}</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+        <h3 class="text-sm font-semibold text-gray-500 uppercase mb-1">Reminder Time</h3>
+        <p class="text-gray-900 text-base">{{ data.reminderTime | date: 'yyyy-MM-dd HH:mm' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🟡 EDIT MODE -->
+  <ng-template #editMode>
+    <form [formGroup]="form" (ngSubmit)="save()" class="space-y-6">
+      <!-- Global Error -->
+      <div *ngIf="backendErrors?._global" class="text-center text-red-600 text-sm font-medium">
+        {{ backendErrors._global }}
+      </div>
+
+      <!-- Title -->
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Title</mat-label>
+        <input matInput formControlName="title" placeholder="Enter event title" />
+        <mat-error *ngIf="form.get('title')?.hasError('backend')">
+          {{ backendErrors?.title }}
+        </mat-error>
+        <mat-error *ngIf="form.get('title')?.hasError('required')">
+          Title is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Description -->
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Description</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          placeholder="Write a short description..."
+          rows="3"
+        ></textarea>
+      </mat-form-field>
+
+      <!-- Event-Date -->
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Event Date</mat-label>
+        <input matInput type="date" formControlName="eventDate" [min]="minEventDate" />
+        <mat-error *ngIf="form.get('eventDate')?.hasError('backend')">
+          {{ backendErrors?.eventDate }}
+        </mat-error>
+        <mat-error *ngIf="form.get('eventDate')?.hasError('required')">
+          Event-Date is required.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Reminder-Time -->
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Reminder Time</mat-label>
+        <input matInput type="datetime-local" formControlName="reminderTime" [min]="minReminderTime" />
+        <mat-error *ngIf="form.get('reminderTime')?.hasError('backend')">
+          {{ backendErrors?.reminderTime }}
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </ng-template>
+</mat-dialog-content>
+
+<!-- Buttons -->
+<mat-dialog-actions class="flex justify-end gap-3 pt-5 border-t border-gray-200 bg-gray-50 px-6 pb-3 rounded-b-2xl">
+  <button
+    mat-stroked-button
+    type="button"
+    class="rounded-xl !text-gray-700 hover:!bg-gray-200 transition"
+    (click)="cancel()"
+  >
+    Cancel
+  </button>
+  <button
+    *ngIf="!data?.readonly"
+    mat-flat-button
+    color="primary"
+    class="rounded-xl px-6 py-2 !text-white shadow-sm hover:shadow-md transition"
+    [disabled]="isSaving"
+    (click)="save()"
+  >
+    {{ isSaving ? 'Saving...' : 'Save' }}
+  </button>
+</mat-dialog-actions>

@@ -1,9 +1,148 @@
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+/* 🌿 Container / Card Layout */
+.container {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 2rem auto;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
 }
 
-.full-width {
-    width: 100%;
+.container:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* 🌸 Header Section */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+h2 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #1e3a8a; /* Tailwind blue-900 */
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ✨ Add Event Button */
+button.primary {
+  background-color: #2563eb; /* Tailwind blue-600 */
+  color: #fff;
+  font-weight: 500;
+  border-radius: 12px;
+  padding: 8px 18px;
+  transition: background 0.2s ease;
+}
+
+button.primary:hover {
+  background-color: #1d4ed8; /* Tailwind blue-700 */
+}
+
+/* 📋 Table Styling */
+.full-width-table {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb; /* Tailwind gray-200 */
+  background-color: #fff;
+}
+
+.mat-mdc-header-cell {
+  background-color: #e8eaf6 !important;
+  font-weight: 600;
+  color: #374151; /* gray-700 */
+  font-size: 15px;
+  padding: 16px 10px !important;
+  text-transform: uppercase;
+}
+
+.mat-mdc-cell {
+  color: #444;
+  font-size: 14px;
+  padding: 12px 10px !important;
+}
+
+.mat-mdc-row:hover {
+  background-color: #f9fafb;
+  cursor: pointer;
+}
+
+/* 🌀 Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 220px;
+  color: #666;
+  font-size: 15px;
+}
+
+.mat-mdc-icon-button {
+  margin-right: 5px;
+  color: #374151;
+}
+
+.mat-mdc-icon-button:hover {
+  background-color: rgba(37, 99, 235, 0.1); /* blue-600/10 */
+}
+
+/* 🧩 Dialog (Modal) Styling */
+mat-dialog-content {
+  max-height: 75vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+}
+
+mat-form-field {
+  --mdc-filled-text-field-container-color: #ffffff;
+  border-radius: 12px !important;
+}
+
+mat-dialog-actions {
+  background-color: #f3f4f6; /* gray-100 */
+  border-top: 1px solid #e5e7eb;
+  padding: 1rem 1.5rem;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* 💙 Primary Button */
+button[mat-flat-button] {
+  background-color: #2563eb !important; /* Tailwind blue-600 */
+  color: white !important;
+  border-radius: 12px !important;
+  padding: 8px 20px !important;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+  transition: all 0.2s ease-in-out;
+}
+
+button[mat-flat-button]:hover {
+  background-color: #1d4ed8 !important;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+/* 🩶 Cancel Button */
+button[mat-stroked-button],
+button[mat-button] {
+  border-radius: 12px !important;
+  color: #374151 !important;
+  font-weight: 500;
+  padding: 8px 20px !important;
+  transition: all 0.2s ease-in-out;
+}
+
+button[mat-button]:hover {
+  background-color: #e5e7eb !important; /* gray-200 */
 }

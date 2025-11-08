@@ -1,1 +1,11 @@
+<h1 class="text-3xl text-primary text-center font-bold">Tailwind is working 🎉</h1>
+
 <router-outlet></router-outlet>
+
+<div class="loading-overlay" *ngIf="loading.isLoading()">
+    <mat-progress-spinner
+    mode="indeterminate"
+    diameter="60"
+    strokeWidth="5">
+    </mat-progress-spinner>
+</div>
