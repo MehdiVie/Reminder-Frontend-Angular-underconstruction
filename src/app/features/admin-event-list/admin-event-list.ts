@@ -3,15 +3,16 @@ import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { EventDialog } from '../event-dialog/event-dialog';
-import { EventService } from '../../core/services/event.service';
-import { AuthService } from '../../core/services/auth.service';
-import { ActivatedRoute } from '@angular/router';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterModule } from '@angular/router';
 import { AdminService } from '../../core/services/admin.service';
 import { AdminEvent } from '../../core/models/adminEvent.model';
+import { MatFormField } from "@angular/material/form-field";
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 
 
@@ -19,19 +20,23 @@ import { AdminEvent } from '../../core/models/adminEvent.model';
 @Component({
   selector: 'app-admin-event-list',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule , MatProgressSpinnerModule, RouterModule , MatDialogModule ],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, RouterModule, MatDialogModule, MatFormField, MatFormFieldModule,MatSelectModule,MatOptionModule,MatTooltipModule],
   templateUrl: './admin-event-list.html',
   styleUrls: ['./admin-event-list.css']
 })
 export class AdminEventListComponent implements OnInit {
+
   displayedColumns: string[] = [];
   events: AdminEvent[] = [];
+
+  currentPage = 0;
+  pageSize = 2;
+  totalItems = 0;
+  totalPages = 0;
+  sortBy = 'id';
+  direction : 'asc' | 'desc' = 'asc'
   
-  constructor(private eventService: EventService , 
-              private authService: AuthService ,
-              private adminService: AdminService ,
-              private dialog: MatDialog,
-              private route : ActivatedRoute) {}
+  constructor(private adminService: AdminService ) {}
 
 
   ngOnInit() {
@@ -40,16 +45,47 @@ export class AdminEventListComponent implements OnInit {
   }
 
   loadEvents() {
-      this.adminService.getAll().subscribe({
-      next: (res) => {
-        console.log('Events received from backend:', res.data);
-        this.events = res.data;
-      },
+      this.adminService
+      .getPage(this.currentPage,this.pageSize,this.sortBy,this.direction)
+        .subscribe({
+            next: (res) => {
+              console.log('Events received from backend:', res.data);
+              const page = res.data;
+              this.events = page.content;
+              this.totalItems = page.totalItems;
+              this.pageSize = page.size;
+              this.currentPage = page.currentPage;
+              this.totalPages = page.totalPages;
+            },
       error: (err) => {
         console.error('Error fetching events:', err);
       },
     });
     
+    }
+
+    nextPage() {
+      if (this.currentPage + 1 < this.totalPages) {
+        this.currentPage++;
+        this.loadEvents();
+      }
+    }
+
+    prevPage() {
+      if (this.currentPage > 0) {
+        this.currentPage--;
+        this.loadEvents();
+      }
+    }
+
+    onSortChange() {
+      this.currentPage = 0; 
+      this.loadEvents();
+    }
+
+    toggleDirection() {
+      this.direction = this.direction === 'asc' ? 'desc' : 'asc';
+      this.loadEvents();
     }
 
     sendReminder(id : number) {

@@ -12,18 +12,29 @@ import { ActivatedRoute } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterModule } from '@angular/router';
 import { AdminService } from '../../core/services/admin.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 
 @Component({
   selector: 'app-event-list',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule , MatProgressSpinnerModule, RouterModule , MatDialogModule ],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule , MatProgressSpinnerModule, RouterModule , MatDialogModule, MatFormFieldModule,MatSelectModule,MatTooltipModule,MatOptionModule ],
   templateUrl: './event-list.html',
   styleUrls: ['./event-list.css']
 })
 export class EventListComponent implements OnInit {
   displayedColumns: string[] = [];
   events: Event[] = [];
+
+  currentPage = 0;
+  pageSize = 2;
+  totalItems = 0;
+  totalPages = 0;
+  sortBy = 'id';
+  direction : 'asc' | 'desc' = 'asc'
   
 
   constructor(private eventService: EventService , 
@@ -48,16 +59,47 @@ export class EventListComponent implements OnInit {
 
   loadEvents() {
 
-      this.eventService.getAll().subscribe({
-      next: (res) => {
-        console.log('Events received from backend:', res.data);
-        this.events = res.data;
-      },
-      error: (err) => {
-        console.error('Error fetching events:', err);
-      },
-    });
+      this.eventService
+        .getPage(this.currentPage,this.pageSize,this.sortBy,this.direction)
+        .subscribe({
+            next: (res) => {
+              console.log('Events received from backend:', res.data);
+              const page = res.data;
+              this.events = page.content;
+              this.totalItems = page.totalItems;
+              this.pageSize = page.size;
+              this.currentPage = page.currentPage;
+              this.totalPages = page.totalPages;
+            },
+            error: (err) => {
+              console.error('Error fetching events:', err);
+            },
+        });
     }
+
+  nextPage() {
+    if (this.currentPage + 1 < this.totalPages) {
+      this.currentPage++;
+      this.loadEvents();
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.loadEvents();
+    }
+  }
+
+  onSortChange() {
+    this.currentPage = 0; 
+    this.loadEvents();
+  }
+
+  toggleDirection() {
+    this.direction = this.direction === 'asc' ? 'desc' : 'asc';
+    this.loadEvents();
+  }
 
 
   getEvent(id : number) {

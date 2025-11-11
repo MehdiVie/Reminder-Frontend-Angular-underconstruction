@@ -7,7 +7,31 @@
       <mat-icon class="text-primary text-3xl">event</mat-icon>
       Event List
     </h2>
+<!-- Sort Controls -->
+  <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2 shadow-sm">
+    <span class="text-gray-600 text-sm font-medium">Sort by:</span>
+
+    <mat-form-field appearance="outline" class="!w-32 mt-5 !p-0">
+      <mat-select [(value)]="sortBy" (selectionChange)="onSortChange()" disableRipple>
+        <mat-option value="id">ID</mat-option>
+        <mat-option value="title">Title</mat-option>
+        <mat-option value="eventDate">Event Date</mat-option>
+        <mat-option value="reminderTime">Reminder Time</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button
+      mat-icon-button
+      (click)="toggleDirection()"
+      [matTooltip]="direction === 'asc' ? 'Ascending' : 'Descending'"
+      class="!w-8 !h-8 border border-gray-300 rounded-md hover:bg-gray-100 mb-3"
+    >
+      <mat-icon>
+        {{ direction === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+      </mat-icon>
+    </button>
   </div>
+</div>
   
 
 <!-- Table Container -->
@@ -84,6 +108,23 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
+</div>
+
+<!-- Pagination -->
+<div class="w-full flex justify-center">
+  <div class="flex items-center gap-3 mt-4" >
+    <button mat-stroked-button (click)="prevPage()" [disabled]="currentPage === 0">
+      Prev
+    </button>
+    <span>Page {{ currentPage + 1 }}</span>
+    <button
+      mat-stroked-button
+      (click)="nextPage()"
+      [disabled]="currentPage + 1 >= totalPages"
+    >
+      Next
+    </button>
+  </div>
 </div>
 
 <!-- Empty State -->
