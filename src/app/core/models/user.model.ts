@@ -1,20 +1,20 @@
 export interface LoginRequest {
-    email : string ,
+    email : string ;
     password : string 
 }
 
 export interface RegisterRequest {
-    email : string , 
+    email : string ;
     passwoord : string
 }
 
 export interface LoginResponse {
-    status : string , 
-    message : string ,
+    status : string ;
+    message : string ;
     data : {
         id : number , 
         email : string ,
         roles : string[] , 
         token : string
-    }
+    };
 }

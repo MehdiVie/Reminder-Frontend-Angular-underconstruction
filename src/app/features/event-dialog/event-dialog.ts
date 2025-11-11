@@ -50,15 +50,18 @@ export class EventDialog {
   // yyy-mm-dd
   private normalizeDate(val: string | null): string {
     if (!val) return '';
-    const date = new Date(val);
-    return date.toISOString().split('T')[0];
+    return val.substring(0, 10);
   }
 
   // yyyy-mm-ddTHH:mm
   private normalizeDateTimeLocal(val: string | null) : string {
     if (!val) return '';
-    const date = new Date(val);
-    return date.toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
+
+    const cleaned = val
+    .replace(/\.\d+.*$/, '')   
+    .replace(/:\d{2}$/, '');  
+
+    return cleaned.substring(0, 16);
   }
 
   // minEventDate & minReminderTime
@@ -144,10 +147,17 @@ export class EventDialog {
           this.isSaving=false;
           // show errors from backend-validation in from
           if (err?.error?.data) {
+            //console.log('Backend validation errors:', err.error.data);
             this.backendErrors = err.error.data;
             Object.keys(this.backendErrors).forEach((key) => {
-              const control = this.form.get(key);
-              if (control) control.setErrors({ backend: true });
+              const pureKey = key.includes('.') 
+                              ? key.split('.').pop()! 
+                              : key;
+              const control = this.form.get(pureKey);
+              if (control) {
+                control.setErrors({ backend: true });
+                control.markAsTouched();
+              }
             });
           } else {
           this.backendErrors._global = err?.error?.message || 'Save failed.';

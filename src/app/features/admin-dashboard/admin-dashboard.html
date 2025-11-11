@@ -1,0 +1,43 @@
+<div class="p-8 bg-background min-h-screen">
+    <h2 class="text-3xl font-bold mb-6 flex items-center gap-2">
+        <mat-icon>dashboard</mat-icon>
+        Admin Dashboard
+    </h2>
+
+    <div *ngIf="loading" class="text-gray-500">loading...</div>
+
+    <div *ngIf="!loading && stats" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- Total Users -->
+         <mat-card class="p-6 text-center shadow-md rounded-xl border border-gray-100">
+            <mat-icon class="text-4xl text-primary mb-2">group</mat-icon>
+            <h3 class="text-xl font-semibold">Users</h3>
+            <p class="text-3xl font-bold mt-1">{{ stats.totalUsers }}</p>
+         </mat-card>
+
+        <!-- Total Events -->
+         <mat-card class="p-6 text-center shadow-md rounded-xl border border-gray-100">
+            <mat-icon class="text-4xl text-primary mb-2">event</mat-icon>
+            <h3 class="text-xl font-semibold">Events</h3>
+            <p class="text-3xl font-bold mt-1">{{ stats.totalEvents }}</p>
+         </mat-card>
+
+        <!-- Total Sent Reminders -->
+         <mat-card class="p-6 text-center shadow-md rounded-xl border border-gray-100">
+            <mat-icon class="text-4xl text-primary mb-2">send</mat-icon>
+            <h3 class="text-xl font-semibold">Sent Reminders</h3>
+            <p class="text-3xl font-bold mt-1">{{ stats.totalReminderSent }}</p>
+         </mat-card>
+
+        <!-- Total Pending Reminders -->
+         <mat-card class="p-6 text-center shadow-md rounded-xl border border-gray-100">
+            <mat-icon class="text-4xl text-primary mb-2">schedule</mat-icon>
+            <h3 class="text-xl font-semibold">Pending Reminders</h3>
+            <p class="text-3xl font-bold mt-1">{{ stats.totalPendingReminders }}</p>
+         </mat-card>
+
+
+    </div>
+
+
+</div>

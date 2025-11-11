@@ -41,7 +41,19 @@ export class AuthService {
         return token;
     }
 
+    hasRole(role : string) : boolean {
+        const token = this.getToken();
+        if (!token) return false;
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.roles?.includes(role);
+    }
+
+
     logout() : void {
         localStorage.removeItem(this.token_key);
+        this.currentUserEmail.next(null);
+        localStorage.removeItem('user');
+        sessionStorage.clear();
+        window.location.href = '/login';
     }
 }

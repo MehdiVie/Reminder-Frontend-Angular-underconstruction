@@ -1,4 +1,4 @@
-/* 🌿 Container / Card Layout */
+/* Container / Card Layout */
 .container {
   padding: 2rem;
   max-width: 1000px;
@@ -13,7 +13,7 @@
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }
 
-/* 🌸 Header Section */
+/* Header Section */
 .header {
   display: flex;
   justify-content: space-between;
@@ -31,7 +31,7 @@ h2 {
   gap: 8px;
 }
 
-/* ✨ Add Event Button */
+/* Add Event Button */
 button.primary {
   background-color: #2563eb; /* Tailwind blue-600 */
   color: #fff;
@@ -45,7 +45,7 @@ button.primary:hover {
   background-color: #1d4ed8; /* Tailwind blue-700 */
 }
 
-/* 📋 Table Styling */
+/* Table Styling */
 .full-width-table {
   width: 100%;
   border-radius: 12px;
@@ -74,7 +74,7 @@ button.primary:hover {
   cursor: pointer;
 }
 
-/* 🌀 Loading State */
+/* Loading State */
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -94,7 +94,7 @@ button.primary:hover {
   background-color: rgba(37, 99, 235, 0.1); /* blue-600/10 */
 }
 
-/* 🧩 Dialog (Modal) Styling */
+/* Dialog (Modal) Styling */
 mat-dialog-content {
   max-height: 75vh;
   overflow-y: auto;
@@ -117,7 +117,7 @@ mat-dialog-actions {
   border-bottom-right-radius: 12px;
 }
 
-/* 💙 Primary Button */
+/* Primary Button */
 button[mat-flat-button] {
   background-color: #2563eb !important; /* Tailwind blue-600 */
   color: white !important;
@@ -133,7 +133,7 @@ button[mat-flat-button]:hover {
   box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
 }
 
-/* 🩶 Cancel Button */
+/* Cancel Button */
 button[mat-stroked-button],
 button[mat-button] {
   border-radius: 12px !important;

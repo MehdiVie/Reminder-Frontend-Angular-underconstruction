@@ -5,7 +5,7 @@
 
 <mat-dialog-content class="px-6 py-4 bg-gray-50 rounded-2xl shadow-inner">
 
-  <!-- 🟢 VIEW MODE -->
+  <!-- VIEW MODE -->
   <div *ngIf="data?.readonly; else editMode" class="space-y-5">
     <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
       <h3 class="text-sm font-semibold text-gray-500 uppercase mb-1">Title</h3>
@@ -29,7 +29,7 @@
     </div>
   </div>
 
-  <!-- 🟡 EDIT MODE -->
+  <!-- EDIT MODE -->
   <ng-template #editMode>
     <form [formGroup]="form" (ngSubmit)="save()" class="space-y-6">
       <!-- Global Error -->

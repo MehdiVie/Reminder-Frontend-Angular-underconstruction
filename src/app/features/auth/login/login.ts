@@ -39,8 +39,18 @@ export class LoginComponent {
 
         try {
             const res = await firstValueFrom(this.authService.login(data));
-            this.authService.saveToken(res.data.token);
-            this.router.navigate(['/events']);
+            const token = res.data.token;
+            this.authService.saveToken(token);
+
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const roles: string[] = payload.roles || [];
+
+            if (roles.includes("ADMIN")) {
+                this.router.navigate(['/admin/events']);
+            } else {
+                this.router.navigate(['/events']);
+            }
+     
         } catch(err) {
             console.error(err);
             this.errorMessage.set("Invalid email or password.");
