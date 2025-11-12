@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Event } from '../models/event.model';
 import { ApiResponse } from '../models/apiResponse.model';
 import { PageResponse } from '../models/pageResponse.model';
+import { UpcomingReminder } from '../models/UpcomingReminder.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,8 @@ getPage(
   pageSize = 10 ,
   sortBy = 'id',
   direction : 'asc' | 'desc' = 'asc',
-  afterDate?: string
+  afterDate?: string,
+  search?: string
 ) :  Observable<ApiResponse<PageResponse<Event>>> {
       currentPage = isNaN(currentPage) ? 0 : currentPage;
       pageSize = isNaN(pageSize) ? 1 : pageSize;
@@ -28,8 +30,23 @@ getPage(
             .set('sortBy',sortBy)
             .set('direction',direction);
 
-  return this.http.get<ApiResponse<PageResponse<Event>>>(`${this.apiUrl}/paged`, { params, });
+      if (afterDate) params= params.set('afterDate',afterDate);
+      if (search) params= params.set('search',search);
 
+  return this.http.get<ApiResponse<PageResponse<Event>>>(`${this.apiUrl}/paged`, { params });
+
+}
+
+getUpcomingRemiders(minutes : number=1) : Observable<ApiResponse<UpcomingReminder[]>> {
+  return this.http.get<ApiResponse<UpcomingReminder[]>>(`${this.apiUrl}/upcoming`, { params : { minute: minutes } });
+}
+
+getSearchedEvents(term : string) : Observable<ApiResponse<Event[]>> {
+  let params = new HttpParams();
+  if (term) {
+    params = params.set('search',term);
+  }
+  return this.http.get<ApiResponse<Event[]>>(`${this.apiUrl}`, { params });
 }
 
 getAll(): Observable<ApiResponse<Event[]>> {

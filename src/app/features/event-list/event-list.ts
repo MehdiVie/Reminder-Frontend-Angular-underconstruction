@@ -6,28 +6,33 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { EventDialog } from '../event-dialog/event-dialog';
 import { EventService } from '../../core/services/event.service';
-import { AuthService } from '../../core/services/auth.service';
 import { Event } from '../../core/models/event.model';
 import { ActivatedRoute } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterModule } from '@angular/router';
-import { AdminService } from '../../core/services/admin.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { FormsModule } from '@angular/forms';
+import { debounceTime, Subject } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { UpcomingReminder } from '../../core/models/UpcomingReminder.model';
 
 
 @Component({
   selector: 'app-event-list',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule , MatProgressSpinnerModule, RouterModule , MatDialogModule, MatFormFieldModule,MatSelectModule,MatTooltipModule,MatOptionModule ],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule , MatProgressSpinnerModule, RouterModule , MatDialogModule, MatFormFieldModule,MatSelectModule,MatTooltipModule,MatOptionModule,FormsModule],
   templateUrl: './event-list.html',
   styleUrls: ['./event-list.css']
 })
 export class EventListComponent implements OnInit {
   displayedColumns: string[] = [];
   events: Event[] = [];
+  searchTerm: string='';
+  afterDate?: string;
+  searchSubject = new Subject<string>(); 
 
   currentPage = 0;
   pageSize = 2;
@@ -35,14 +40,28 @@ export class EventListComponent implements OnInit {
   totalPages = 0;
   sortBy = 'id';
   direction : 'asc' | 'desc' = 'asc'
+
   
 
   constructor(private eventService: EventService , 
               private dialog: MatDialog,
-              private route : ActivatedRoute) {}
+              private route : ActivatedRoute,
+              private snackBar: MatSnackBar) {}
 
 
   ngOnInit() {
+
+    setInterval(() => {
+        this.checkUpcomingRemiders();
+    }, 30000)
+
+    this.searchSubject.pipe(
+      debounceTime(400)
+    ).subscribe(term => {
+      this.searchTerm = term;
+      this.onSortAndSearchChange();
+    })
+
     const idParam = this.route.snapshot.paramMap.get('id');
     
     this.displayedColumns = ['id', 'title', 'description', 'eventDate', 'reminderTime', 'actions'];
@@ -60,7 +79,7 @@ export class EventListComponent implements OnInit {
   loadEvents() {
 
       this.eventService
-        .getPage(this.currentPage,this.pageSize,this.sortBy,this.direction)
+        .getPage(this.currentPage,this.pageSize,this.sortBy,this.direction,this.afterDate,this.searchTerm)
         .subscribe({
             next: (res) => {
               console.log('Events received from backend:', res.data);
@@ -77,6 +96,36 @@ export class EventListComponent implements OnInit {
         });
     }
 
+  checkUpcomingRemiders() {
+    this.eventService.getUpcomingRemiders(1).subscribe({
+      next : (res) => {
+        if (res.status==='success' && res.data.length > 0) {
+            for(const ev of res.data) {
+              this.showReminderToast(ev);
+            }
+        }
+      },
+      error: (err) => {
+        console.error('Error showing reminder-toast:', err);
+      },
+    })
+  }
+
+  showReminderToast(event : UpcomingReminder) {
+    this.snackBar.open(
+      `Reminder "${event.title}" starts at ${new Date(event.reminderTime).toLocaleTimeString()}`,
+      'View',
+      {
+        duration : 8000,
+        horizontalPosition : 'center',
+        verticalPosition : 'top'
+      }
+    ).onAction().subscribe(() => {
+      this.showEvent(event);
+    });
+
+  }
+
   nextPage() {
     if (this.currentPage + 1 < this.totalPages) {
       this.currentPage++;
@@ -91,7 +140,7 @@ export class EventListComponent implements OnInit {
     }
   }
 
-  onSortChange() {
+  onSortAndSearchChange() {
     this.currentPage = 0; 
     this.loadEvents();
   }
@@ -100,6 +149,11 @@ export class EventListComponent implements OnInit {
     this.direction = this.direction === 'asc' ? 'desc' : 'asc';
     this.loadEvents();
   }
+
+  onSearchChange(term : string) {
+    this.searchSubject.next(term);
+  }
+
 
 
   getEvent(id : number) {

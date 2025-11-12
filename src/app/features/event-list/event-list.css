@@ -84,3 +84,100 @@ button[mat-flat-button]:hover {
   background-color: #1d4ed8 !important; /* Tailwind blue-700 */
 }
 
+
+.sort-select {
+  width: 8rem !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 40px !important;
+  display: flex;
+  align-items: center;
+}
+
+
+::ng-deep .sort-select .mat-mdc-form-field-infix {
+  padding: 0.25rem 0 0.25rem 0 !important;
+  min-height: 40px !important;
+  display: flex;
+  align-items: center;
+}
+
+
+.sort-btn {
+  width: 40px !important;
+  height: 40px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d1d5db !important; 
+  border-radius: 6px !important;
+  background: white;
+  transition: background 0.2s ease-in-out;
+}
+
+.sort-btn:hover {
+  background-color: #f3f4f6 !important; 
+}
+
+
+::ng-deep .mat-mdc-tooltip {
+  font-size: 12px !important;
+  text-align: center;
+  padding: 4px 8px !important;
+}
+
+.full-width-table {
+  width: 100%;
+  border-radius: 10px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table-container {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.table-container table {
+  min-width: 700px;
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+  .table-container table {
+    min-width: 600px;
+  }
+
+  .mat-mdc-cell,
+  .mat-mdc-header-cell {
+    font-size: 13px !important;
+    padding: 6px 8px !important;
+    white-space: nowrap !important;
+  }
+
+  .flex.flex-wrap {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .bg-white.rounded-xl.shadow-md.border {
+    overflow-x: auto;
+  }
+
+  .sort-select {
+    width: 100% !important;
+  }
+
+  .sort-btn {
+    width: 38px !important;
+    height: 38px !important;
+    border: none !important;
+  }
+
+  
+  .sort-select,
+  .sort-btn {
+    margin-bottom: 0.25rem;
+  }
+}
+

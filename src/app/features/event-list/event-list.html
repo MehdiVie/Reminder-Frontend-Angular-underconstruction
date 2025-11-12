@@ -1,52 +1,92 @@
 
 <div class="p-6 bg-background min-h-screen">
 
-  <!--Header-->
-  <div class="flex items-center justify-between mb-6">
-    <h2 class="text-2xl font-bold text-gray-800  flex items-center gap-2">
-      <mat-icon class="text-primary text-3xl">event</mat-icon>
-      Event List
-    </h2>
-<div class="flex items-center gap-3">
-    <!-- Sort Controls -->
-  <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2 shadow-sm">
-    <span class="text-gray-600 text-sm font-medium">Sort by:</span>
+<!-- Header -->
+<div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
 
-    <mat-form-field appearance="outline" class="!w-32 mt-5 !p-0">
-      <mat-select [(value)]="sortBy" (selectionChange)="onSortChange()" disableRipple>
-        <mat-option value="id">ID</mat-option>
-        <mat-option value="title">Title</mat-option>
-        <mat-option value="eventDate">Event Date</mat-option>
-        <mat-option value="reminderTime">Reminder Time</mat-option>
-      </mat-select>
-    </mat-form-field>
+  <!-- Title -->
+  <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+    <mat-icon class="text-primary text-3xl">event</mat-icon>
+    Event List
+  </h2>
 
+  <!-- Right side: Sort + Add -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+
+    <!-- Sort Box -->
+    <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full sm:w-auto">
+      <span class="text-gray-600 text-sm font-medium whitespace-nowrap">Sort by:</span>
+
+      <div class="flex items-center gap-2">
+        <mat-form-field appearance="outline" class="sort-select">
+          <mat-select [(value)]="sortBy" (selectionChange)="onSortAndSearchChange()" disableRipple>
+            <mat-option value="id">ID</mat-option>
+            <mat-option value="title">Title</mat-option>
+            <mat-option value="eventDate">Event Date</mat-option>
+            <mat-option value="reminderTime">Reminder Time</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Asc/Desc Button -->
+        <button
+          mat-icon-button
+          (click)="toggleDirection()"
+          [matTooltip]="direction === 'asc' ? 'Ascending' : 'Descending'"
+          matTooltipPosition="below"
+          class="sort-btn"
+        >
+          <mat-icon>
+            {{ direction === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+          </mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Search Box -->
+    <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2 shadow-sm">
+      <mat-icon class="text-gray-500">search</mat-icon>
+      <input
+        type="text"
+        placeholder="Search events..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange($event.target.value)"
+        class="outline-none border-none w-48 sm:w-64 text-sm text-gray-700"
+      />
+    </div>
+
+    <!-- Date Filter -->
+    <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2 shadow-sm">
+      <mat-icon class="text-gray-500">calender_today</mat-icon>
+      <input 
+        type="date"
+        class="outline-none border-none text-sm text-gray-700"
+        [(ngModel)]="afterDate"
+        (change)="onSortAndSearchChange()"
+      />
+    </div>
+
+    <!-- Add Event -->
     <button
-      mat-icon-button
-      (click)="toggleDirection()"
-      [matTooltip]="direction === 'asc' ? 'Ascending' : 'Descending'"
-      class="!w-8 !h-8 border border-gray-300 rounded-md hover:bg-gray-100 mb-3"
+      mat-raised-button
+      color="primary"
+      class="!bg-primary !text-white flex items-center gap-2 px-4 py-2 shadow-md hover:shadow-lg transition-all duration-200 self-end sm:self-auto"
+      (click)="addEvent()"
     >
-      <mat-icon>
-        {{ direction === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
-      </mat-icon>
-    </button>
-</div>
-        <button 
-    mat-raised-button 
-    color="primary"
-    class="!bg-primary !text-white flex items-center gap-2" 
-    (click)="addEvent()">
       <mat-icon>add</mat-icon>
       Add Event
     </button>
   </div>
 </div>
-  
 
+
+  
 <!-- Table Container -->
-<div class="items-center bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
-  <table mat-table [dataSource]="events" class="mat-elevation-z8 full-width-table">
+<div class="table-container bg-white rounded-xl shadow-md border border-gray-100 overflow-x-auto">
+  <table
+    mat-table
+    [dataSource]="events"
+    class="mat-elevation-z8 full-width-table min-w-[700px]"
+  >
 
     <!-- ID Column -->
     <ng-container matColumnDef="id">
