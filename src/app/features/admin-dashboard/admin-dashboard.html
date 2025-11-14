@@ -6,7 +6,7 @@
 
     <div *ngIf="loading" class="text-gray-500">loading...</div>
 
-    <div *ngIf="!loading && stats" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div *ngIf="!loading && stats" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
         <!-- Total Users -->
          <mat-card class="p-6 text-center shadow-md rounded-xl border border-gray-100">
@@ -36,8 +36,55 @@
             <p class="text-3xl font-bold mt-1">{{ stats.totalPendingReminders }}</p>
          </mat-card>
 
+         
+        <!-- Events Last 7 Days -->
+         <mat-card class="p-6 text-center shadow-md rounded-xl border border-gray-100">
+            <mat-icon class="text-4xl text-primary mb-2">calendar_today</mat-icon>
+            <h3 class="text-xl font-semibold">Events(7 Days)</h3>
+            <p class="text-3xl font-bold mt-1">{{ stats.countEventsLast24Hours}}</p>
+         </mat-card>
+
+         <!-- Events Last 24 Hours -->
+         <mat-card class="p-6 text-center shadow-md rounded-xl border border-gray-100">
+            <mat-icon class="text-4xl text-primary mb-2">calendar_today</mat-icon>
+            <h3 class="text-xl font-semibold">Events(24 Hours)</h3>
+            <p class="text-3xl font-bold mt-1">{{ stats.countEventsLast24Hours}}</p>
+         </mat-card>
+
+         
+         <!-- Reminders last 24 hours / upcoming -->
+         <mat-card class="p-6 text-center shadow-md rounded-xl border border-gray-100">
+            <mat-icon class="text-4xl text-primary mb-2">notifications_active</mat-icon>
+            <h3 class="text-xl font-semibold">Reminders</h3>
+            <p class="text-lg font-semibold mt-1">
+            Sent 24h: <span class="text-2xl">{{ stats.countRemindersSentLast24Hours }}</span>
+            </p>
+            <p class="text-lg font-semibold">
+            Upcoming 24h:
+            <span class="text-2xl">{{ stats.countUpcomingRemindersNext24Hours }}</span>
+            </p>
+            <p class="text-xs text-gray-500 mt-1">
+            Last & next 24 hours
+            </p>
+         </mat-card>
+
+         <!-- Line Chart -->
+         <mat-card class="p-6 shadow-md rounded-xl border border-gray-100">
+            <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+               <mat-icon>show_cart</mat-icon>
+               Events per day (defined in Backend)
+            </h3>
+            <div class="w-full">
+               <canvas
+                  baseChart
+                  [data]="lineChartData"
+                  [options]="lineChartOPtions"
+                  [type]="'line'"
+               >
+               </canvas>
+            </div>
+         </mat-card>
+
 
     </div>
-
-
 </div>

@@ -17,13 +17,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { debounceTime, Subject } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { UpcomingReminder } from '../../core/models/UpcomingReminder.model';
 
 
 @Component({
   selector: 'app-event-list',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule , MatProgressSpinnerModule, RouterModule , MatDialogModule, MatFormFieldModule,MatSelectModule,MatTooltipModule,MatOptionModule,FormsModule],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule , MatProgressSpinnerModule, RouterModule , MatDialogModule, MatFormFieldModule,MatSelectModule,MatTooltipModule,MatOptionModule,FormsModule, MatSnackBarModule],
   templateUrl: './event-list.html',
   styleUrls: ['./event-list.css']
 })
@@ -33,6 +34,7 @@ export class EventListComponent implements OnInit {
   searchTerm: string='';
   afterDate?: string;
   searchSubject = new Subject<string>(); 
+  showReminderIds = new Set<number>(); // store eventId that has Toast before
 
   currentPage = 0;
   pageSize = 2;
@@ -96,11 +98,21 @@ export class EventListComponent implements OnInit {
         });
     }
 
+
+
   checkUpcomingRemiders() {
     this.eventService.getUpcomingRemiders(1).subscribe({
       next : (res) => {
         if (res.status==='success' && res.data.length > 0) {
             for(const ev of res.data) {
+              console.log('[Reminder] candidate event:', ev);
+              // check if eventId has toast before
+              if (this.showReminderIds.has(ev.id)) {
+                continue;
+              }
+
+              console.log('[Reminder] showing toast for id', ev.id);
+              this.showReminderIds.add(ev.id); 
               this.showReminderToast(ev);
             }
         }
